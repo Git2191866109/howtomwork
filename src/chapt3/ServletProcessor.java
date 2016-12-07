@@ -31,7 +31,7 @@ public class ServletProcessor {
         Class myClass = null;
         try {
             myClass = loader.loadClass(servletName);
-        } catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException e) {s
             System.out.println(e.toString());
         }
 
@@ -39,9 +39,12 @@ public class ServletProcessor {
 
         try {
             servlet = (Servlet) myClass.newInstance();
+            /* Facade其实就是对request对象进行了包装,一方面增强request的一些功能,一方面对request对象进行了安全保护,只公开公开的方法*/
+            /*安全保护机制*/
             HttpRequestFacade requestFacade = new HttpRequestFacade(request);
             HttpResponseFacade responseFacade = new HttpResponseFacade(response);
             servlet.service(requestFacade, responseFacade);
+
             ((HttpResponse) response).finishResponse();
         } catch (Exception e) {
             System.out.println(e.toString());

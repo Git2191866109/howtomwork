@@ -42,6 +42,7 @@ public class HttpProcessor {
      */
     protected StringManager sm = StringManager.getManager("chapt3.connector.http");
 
+    /*process方法的目的就是解析http请求的socket流中的数据,然后组装|拼凑servlet,也就是服务器的service方法需要的两个参数*/
     public void process(Socket socket) {
         SocketInputStream input = null;
         OutputStream output = null;
@@ -56,14 +57,17 @@ public class HttpProcessor {
             // create HttpResponse object
             response = new HttpResponse(output);
             response.setRequest(request);
-            /*调用setHeader 方法来发送头部到一个客户端*/
+            /*调用setHeader 方法来发送头部到一个客户端,然后塞入request对象中*/
             response.setHeader("Server", "Pyrmont Servlet Container");
-            /*解析请求*/
+            /*解析请求的cookie,请求行的方法， URI 和协议和参数*/
             parseRequest(input, output);
+            /*解析请求的http请求头中的内容,然后塞入request对象中*/
             parseHeaders(input);
 
             //check if this is a request for a servlet or a static resource
             //a request for a servlet begins with "/servlet/"
+            /*上面是把http请求的socket内容解析完成后，然后就提交request对象和responce对象给servlet的service方法*/
+            /*其中,请求内容分为动态资源和静态资源,所以分开处理了*/
             /* URI 的形式把 HttpRequest 和 HttpResponse 对象传给 ServletProcessor 或者 StaticResourceProcessor 进行处理*/
             if (request.getRequestURI().startsWith("/servlet/")) {
                 ServletProcessor processor = new ServletProcessor();
@@ -86,6 +90,7 @@ public class HttpProcessor {
      * org.apache.catalina.connector.http.HttpProcessor.
      * However, this method only parses some "easy" headers, such as
      * "cookie", "content-length", and "content-type", and ignore other headers.
+     * 这步就是解析socket的输入流,然后解析,将解析的请求数据塞入servlet需要的request对象中
      *
      * @param input The input stream connected to our socket
      * @throws IOException      if an input/output error occurs

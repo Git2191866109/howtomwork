@@ -133,12 +133,11 @@ public class ResponseStream extends ServletOutputStream {
 
     /**
      * Write the specified byte to our output stream.
-     *
+     * 将指定的字节写入到我们的output stream
      * @param b The byte to be written
      * @throws IOException if an input/output error occurs
      */
     public void write(int b) throws IOException {
-
         if (closed)
             throw new IOException("responseStream.write.closed");
 

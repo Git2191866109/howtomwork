@@ -32,6 +32,7 @@ public class HttpResponse implements HttpServletResponse {
     PrintWriter writer;
     protected byte[] buffer = new byte[BUFFER_SIZE];
     protected int bufferCount = 0;
+
     /**
      * Has this response been committed yet?
      */
@@ -67,8 +68,7 @@ public class HttpResponse implements HttpServletResponse {
     /**
      * The date format we will use for creating date headers.
      */
-    protected final SimpleDateFormat format =
-            new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
+    protected final SimpleDateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
     /**
      * The error message set by <code>sendError()</code>.
      */
@@ -88,7 +88,7 @@ public class HttpResponse implements HttpServletResponse {
      */
     public void finishResponse() {
         // sendHeaders();
-        // Flush and close the appropriate output mechanism
+        // Flush and close the appropriate output mechanism（适当的输出机制）
         if (writer != null) {
             writer.flush();
             writer.close();

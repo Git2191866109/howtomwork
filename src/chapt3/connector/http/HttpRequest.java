@@ -88,7 +88,7 @@ public class HttpRequest implements HttpServletRequest {
      */
     protected HashMap headers = new HashMap();
     /**
-     * The parsed parameters for this request.  This is populated only if
+     * The parsed parameters for this request.  This is populated（占据） only if
      * parameter information is requested via one of the
      * <code>getParameter()</code> family of method calls.  The key is the
      * parameter name, while the value is a String array of values for this
