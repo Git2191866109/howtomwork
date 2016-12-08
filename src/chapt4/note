@@ -1,0 +1,84 @@
+不管tomcat变得有多复杂
+
+    把握：
+        主线：请求 =======》  解析请求  =======》  处理  ========》   返回
+        辅助：安全考虑，设计考虑等等方面，程序就变得庞大了
+
+
+
+
+
+Http持久连接：
+    建立持续连接的结果就是，使用同一个连接，服务器可以从不同的资源发送字节流，而客户端可以使用发送多个请求。
+    HTTP1.1 使用一个特别的头部 transfer-encoding 来表示有多少以块形式的字节流将会被发送。
+
+Lifecycle接口：  用来维护每个已经实现它的 Catalina 组件的生命周期
+    通过实现 Lifecycle,在你创
+    建 HttpConnector 实例之后，你应该 调用它的 initialize 和 start 方法。这两个方法在组件的
+    生命周期里必须只调用一次
+
+
+Connector 接口：一个 Connector 和 Container是一对一的关系
+    Tomcat 连接器必须实现 org.apache.catalina.Connector 接口
+        setContainer 是用来关联连接器和容器用的
+        getContainer 返回关联的容器。
+        createRequest 为前来的HTTP请求构造一个请求对象
+        createResponse创建一个响应对象
+
+
+HttpConnector：
+
+
+
+HttpConnector
+
+    如何创建一个服务器套接字
+        HttpConnector 的initialize 方法调用open这个私有方法，返回一个java.net.ServerSocket实例，并把它赋予serverSocket
+            open 方法是从一个服务端套接字工厂中获得一个ServerSocket 实例
+
+    如何维护一个 HttpProcessor 对象池
+
+        HttpConnector 拥有一个 HttpProcessor 对象池，从而避免每次创建 HttpProcessor 实例
+            这些 HttpProcessor 实例是存放在一个叫 processors 的 java.io.Stack 中： private Stack processors = new Stack();
+            创建的 HttpProcessor 实例数量是有两个变量决定的： minProcessors 和 maxProcessors。默认情况下， minProcessors 为 5 而 maxProcessors 为 20，
+            newProcessor 方法构造一个 HttpProcessor 对象并增加 curProcessors。 recycle 方法把HttpProcessor 队会栈。
+            每个 HttpProcessor 实例负责解析 HTTP 请求行和头部，并填充请求对象
+            类 HttpProcessor 的构造方法包括了类 HttpConnector 的createRequest 和 createResponse 方法的调用。
+            HttpConnector 类在它的 run 方法中有其主要的逻辑。 run 方法在一个服 务端套接字等待 HTTP 请求的地方存在一个 while 循环，一直运行直至 HttpConnector 被关闭了
+
+
+        HttpProcessor:
+            assign:
+            重要方法是私有方法 process:它是用于解析 HTTP 请求 和调用容器的 invoke 方法的
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        每个HttpProcessor 实例拥有一个独立线程
+
+
+        HttpConnector 可以同时处理多个 HTTP 请求
+

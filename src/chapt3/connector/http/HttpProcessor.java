@@ -22,11 +22,14 @@ public class HttpProcessor {
 
     /**
      * The HttpConnector with which this processor is associated.
+     * 创建请求和响应对象的工作交给了 HttpProcessor 实例
      * HttpProcessor 类的 process 方法接受前来的 HTTP 请求的套接字，会做下面的事情：
      * 1. 创建一个 HttpRequest 对象。
      * 2. 创建一个 HttpResponse 对象。
      * 3. 解析 HTTP 请求的第一行和头部，并放到 HttpRequest 对象。
      * 4. 解 析 HttpRequest 和 HttpResponse 对 象 到 一 个 ServletProcessor 或 者 StaticResourceProcessor。
+     * HttpProcessor 类中的私有方法--parseRequest， parseHeaders 和 normalize，是用来帮助
+     * 填充 HttpRequest 的
      */
     private HttpConnector connector = null;
     private HttpRequest request;
@@ -43,6 +46,7 @@ public class HttpProcessor {
     protected StringManager sm = StringManager.getManager("chapt3.connector.http");
 
     /*process方法的目的就是解析http请求的socket流中的数据,然后组装|拼凑servlet,也就是服务器的service方法需要的两个参数*/
+    /*每个 HttpRequest 实例必须适当增加字段,以便 servlet可以使用它们*/
     public void process(Socket socket) {
         SocketInputStream input = null;
         OutputStream output = null;
@@ -59,7 +63,9 @@ public class HttpProcessor {
             response.setRequest(request);
             /*调用setHeader 方法来发送头部到一个客户端,然后塞入request对象中*/
             response.setHeader("Server", "Pyrmont Servlet Container");
+
             /*解析请求的cookie,请求行的方法， URI 和协议和参数*/
+            /*HttpProcessor 类使用它的 parse 方法 来解析一个 HTTP 请求中的请求行和头部。解析出来并把值赋给 HttpProcessor 对象的这些字段。*/
             parseRequest(input, output);
             /*解析请求的http请求头中的内容,然后塞入request对象中*/
             parseHeaders(input);
@@ -161,6 +167,8 @@ public class HttpProcessor {
         }
         // Parse any query parameters out of the request URI
         /*解析查询参数*/
+        /*parse 方法并不解析请求内容或者请求 字符串里边的参数。这个任务留给了 HttpRequest 对象它们。只是当 servlet 需要一个参数时，查询字
+符串或者请求内容才会被解析*/
         int question = requestLine.indexOf("?");
         if (question >= 0) {
             request.setQueryString(new String(requestLine.uri, question + 1, requestLine.uriEnd - question - 1));

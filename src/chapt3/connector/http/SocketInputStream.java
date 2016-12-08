@@ -123,6 +123,8 @@ public class SocketInputStream extends InputStream {
      * @throws IOException If an exception occurs during the underlying socket
      *                     read operations, or if the given buffer is not big enough to accomodate
      *                     the whole line.
+     *
+     *  readRequestLine 返回一个 HTTP 请求的第一行。
      */
     public void readRequestLine(HttpRequestLine requestLine)
             throws IOException {
